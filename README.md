@@ -2,6 +2,20 @@
 
 A web-based dashboard that helps users improve daily life by addressing **9 biological root causes** of common issues like procrastination, fatigue, and cognitive exhaustion.
 
+## 🚀 Two Implementations Available
+
+**Choose the version that fits your needs:**
+
+1. **Streamlit Version** (Python) - Simple, quick setup
+   - Perfect for: Quick prototyping, Python developers, simple deployment
+   - Run with: `streamlit run streamlit_app.py`
+   - See below for setup instructions
+
+2. **React/Next.js Version** (TypeScript) - Modern, interactive
+   - Perfect for: Production apps, advanced features, better UX
+   - Run with: `cd react-app && npm run dev`
+   - See: [react-app/README.md](react-app/README.md)
+
 ## Key Principle: Biology, Not Willpower
 
 Most productivity advice relies on willpower and discipline. **This fails** because:
