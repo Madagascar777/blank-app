@@ -1,5 +1,14 @@
 .streamlit/secrets.toml
 
+# User data
+user_data.json
+
+# React app
+react-app/node_modules
+react-app/.next
+react-app/out
+react-app/.vercel
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
