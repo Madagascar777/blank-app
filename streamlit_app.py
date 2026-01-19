@@ -1,8 +1,9 @@
 import streamlit as st
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, timezone
 import pandas as pd
 import json
 from pathlib import Path
+import pytz
 
 # Page config
 st.set_page_config(
@@ -61,11 +62,27 @@ st.markdown("""
         0%, 100% { opacity: 1; }
         50% { opacity: 0.8; }
     }
+    .score-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .score-value {
+        font-size: 3rem;
+        font-weight: 900;
+        margin: 0.5rem 0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # Data persistence using session state and JSON
 DATA_FILE = Path("user_data.json")
+
+# GMT+3 timezone
+GMT_PLUS_3 = pytz.timezone('Europe/Moscow')
 
 def load_data():
     """Load user data from JSON file"""
@@ -78,16 +95,130 @@ def load_data():
             'target_sleep_time': '23:00',
             'meal_times': ['08:00', '13:00', '19:00'],
             'work_start': '09:00',
-            'work_end': '17:00'
+            'work_end': '17:00',
+            'timezone': 'GMT+3'
         },
         'daily_logs': [],
-        'current_session': {}
+        'current_session': {},
+        'today_logs': {
+            'wake_time': None,
+            'sleep_time': None,
+            'meals': [],
+            'date': None
+        }
     }
 
 def save_data(data):
     """Save user data to JSON file"""
     with open(DATA_FILE, 'w') as f:
         json.dump(data, f, indent=2, default=str)
+
+def get_current_time_gmt3():
+    """Get current time in GMT+3"""
+    return datetime.now(GMT_PLUS_3)
+
+def time_difference_minutes(target_time_str, actual_time_str):
+    """Calculate difference in minutes between two times"""
+    target = datetime.strptime(target_time_str, '%H:%M').time()
+    actual = datetime.strptime(actual_time_str, '%H:%M').time()
+    
+    target_mins = target.hour * 60 + target.minute
+    actual_mins = actual.hour * 60 + actual.minute
+    
+    return abs(target_mins - actual_mins)
+
+def calculate_daily_score():
+    """Calculate daily score based on adherence to biological schedule"""
+    score = 0
+    max_score = 100
+    breakdown = {}
+    
+    today_logs = st.session_state.data.get('today_logs', {})
+    profile = st.session_state.data['profile']
+    
+    # Wake time score (25 points)
+    wake_score = 0
+    if today_logs.get('wake_time'):
+        diff_mins = time_difference_minutes(profile['target_wake_time'], today_logs['wake_time'])
+        if diff_mins <= 15:
+            wake_score = 25
+        elif diff_mins <= 30:
+            wake_score = 20
+        elif diff_mins <= 60:
+            wake_score = 15
+        else:
+            wake_score = 10
+    breakdown['wake_time'] = wake_score
+    score += wake_score
+    
+    # Sleep time score (25 points)
+    sleep_score = 0
+    if today_logs.get('sleep_time'):
+        diff_mins = time_difference_minutes(profile['target_sleep_time'], today_logs['sleep_time'])
+        if diff_mins <= 15:
+            sleep_score = 25
+        elif diff_mins <= 30:
+            sleep_score = 20
+        elif diff_mins <= 60:
+            sleep_score = 15
+        else:
+            sleep_score = 10
+    breakdown['sleep_time'] = sleep_score
+    score += sleep_score
+    
+    # Meal consistency score (30 points - 10 per meal)
+    meal_score = 0
+    meals = today_logs.get('meals', [])
+    if len(meals) >= 3:
+        meal_score = 30
+    elif len(meals) == 2:
+        meal_score = 20
+    elif len(meals) == 1:
+        meal_score = 10
+    breakdown['meals'] = meal_score
+    score += meal_score
+    
+    # Meal quantity appropriateness (10 points)
+    quantity_score = 0
+    if meals:
+        total_quantity = sum(m.get('quantity', 0) for m in meals)
+        if 300 <= total_quantity <= 500:
+            quantity_score = 10
+        elif 200 <= total_quantity <= 600:
+            quantity_score = 7
+        else:
+            quantity_score = 3
+    breakdown['meal_quantity'] = quantity_score
+    score += quantity_score
+    
+    # Movement tracking (10 points)
+    movement_score = 0
+    if st.session_state.last_movement:
+        time_since_movement = get_time_since(st.session_state.last_movement)
+        if time_since_movement and time_since_movement < timedelta(hours=1):
+            movement_score = 10
+        elif time_since_movement and time_since_movement < timedelta(hours=2):
+            movement_score = 7
+        else:
+            movement_score = 3
+    breakdown['movement'] = movement_score
+    score += movement_score
+    
+    return score, max_score, breakdown
+
+def get_score_grade(score, max_score):
+    """Get letter grade based on score percentage"""
+    percentage = (score / max_score) * 100
+    if percentage >= 90:
+        return "A+", "🏆"
+    elif percentage >= 80:
+        return "A", "⭐"
+    elif percentage >= 70:
+        return "B", "👍"
+    elif percentage >= 60:
+        return "C", "📈"
+    else:
+        return "D", "💪"
 
 # Initialize session state
 if 'data' not in st.session_state:
@@ -253,6 +384,130 @@ with st.sidebar:
 # Main Dashboard
 st.markdown('<p class="main-header">🧬 BioRoots Dashboard</p>', unsafe_allow_html=True)
 st.markdown("**Evidence-based daily life optimizer addressing biological root causes**")
+
+# Display current time in GMT+3
+current_time_gmt3 = get_current_time_gmt3()
+st.markdown(f"**Current Time (GMT+3):** {current_time_gmt3.strftime('%H:%M:%S')} | {current_time_gmt3.strftime('%A, %B %d, %Y')}")
+
+st.markdown("---")
+
+# Daily Score Display
+st.markdown("### 🎯 Your Daily Score")
+score, max_score, breakdown = calculate_daily_score()
+grade, emoji = get_score_grade(score, max_score)
+percentage = (score / max_score) * 100
+
+col_score1, col_score2, col_score3 = st.columns([2, 2, 3])
+
+with col_score1:
+    st.markdown(f"""
+    <div class="score-card">
+        <div style="font-size: 1.2rem;">Daily Score</div>
+        <div class="score-value">{score}/{max_score}</div>
+        <div style="font-size: 1.5rem; margin-top: 0.5rem;">{emoji} Grade: {grade}</div>
+        <div style="margin-top: 0.5rem; font-size: 0.9rem;">({percentage:.1f}%)</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col_score2:
+    st.markdown("#### 📊 Score Breakdown")
+    st.metric("⏰ Wake Time", f"{breakdown['wake_time']}/25")
+    st.metric("😴 Sleep Time", f"{breakdown['sleep_time']}/25")
+    st.metric("🍽️ Meals", f"{breakdown['meals']}/30")
+
+with col_score3:
+    st.markdown("#### 💡 How to Improve")
+    if breakdown['wake_time'] < 25:
+        st.markdown("- ⏰ Wake up closer to your target time")
+    if breakdown['sleep_time'] < 25:
+        st.markdown("- 😴 Go to sleep closer to your target bedtime")
+    if breakdown['meals'] < 30:
+        st.markdown("- 🍽️ Log all 3 meals today")
+    if breakdown['meal_quantity'] < 10:
+        st.markdown("- 📏 Adjust meal quantities (aim for 300-500g total)")
+    if breakdown['movement'] < 10:
+        st.markdown("- 🚶 Move more frequently (every 45-60 min)")
+    if score >= 90:
+        st.markdown("- 🏆 **Excellent! Keep it up!**")
+
+st.markdown("---")
+
+# Manual Time Logging Section
+st.markdown("### 📝 Manual Time Logging")
+
+col_log1, col_log2, col_log3 = st.columns(3)
+
+with col_log1:
+    st.markdown("#### ⏰ Log Wake-Up Time")
+    today_logs = st.session_state.data.get('today_logs', {})
+    
+    current_wake = today_logs.get('wake_time')
+    if current_wake:
+        st.success(f"✅ Logged: {current_wake}")
+    
+    wake_hour = st.number_input("Hour (0-23)", min_value=0, max_value=23, value=7, key="wake_hour")
+    wake_minute = st.number_input("Minute (0-59)", min_value=0, max_value=59, value=0, key="wake_min")
+    
+    if st.button("💾 Log Wake-Up Time", key="btn_wake"):
+        wake_time_str = f"{wake_hour:02d}:{wake_minute:02d}"
+        st.session_state.data['today_logs']['wake_time'] = wake_time_str
+        st.session_state.data['today_logs']['date'] = current_time_gmt3.date().isoformat()
+        save_data(st.session_state.data)
+        st.success(f"✅ Wake-up time logged: {wake_time_str}")
+        st.rerun()
+
+with col_log2:
+    st.markdown("#### 😴 Log Sleep Time")
+    
+    current_sleep = today_logs.get('sleep_time')
+    if current_sleep:
+        st.success(f"✅ Logged: {current_sleep}")
+    
+    sleep_hour = st.number_input("Hour (0-23)", min_value=0, max_value=23, value=23, key="sleep_hour")
+    sleep_minute = st.number_input("Minute (0-59)", min_value=0, max_value=59, value=0, key="sleep_min")
+    
+    if st.button("💾 Log Sleep Time", key="btn_sleep"):
+        sleep_time_str = f"{sleep_hour:02d}:{sleep_minute:02d}"
+        st.session_state.data['today_logs']['sleep_time'] = sleep_time_str
+        st.session_state.data['today_logs']['date'] = current_time_gmt3.date().isoformat()
+        save_data(st.session_state.data)
+        st.success(f"✅ Sleep time logged: {sleep_time_str}")
+        st.rerun()
+
+with col_log3:
+    st.markdown("#### 🍽️ Log Meal with Quantity")
+    
+    meal_name = st.selectbox("Meal Type", ["Breakfast", "Lunch", "Dinner", "Snack"], key="meal_type")
+    meal_quantity = st.number_input("Quantity (grams)", min_value=10, max_value=1000, value=150, step=10, key="meal_qty")
+    meal_composition = st.selectbox(
+        "Composition",
+        ["Protein-heavy", "Balanced", "Carb-heavy"],
+        key="meal_comp"
+    )
+    
+    if st.button("💾 Log Meal", key="btn_meal"):
+        if 'meals' not in st.session_state.data['today_logs']:
+            st.session_state.data['today_logs']['meals'] = []
+        
+        meal_entry = {
+            'type': meal_name,
+            'quantity': meal_quantity,
+            'composition': meal_composition,
+            'time': current_time_gmt3.strftime('%H:%M')
+        }
+        st.session_state.data['today_logs']['meals'].append(meal_entry)
+        st.session_state.last_meal_time = current_time_gmt3
+        save_data(st.session_state.data)
+        st.success(f"✅ {meal_name} logged: {meal_quantity}g ({meal_composition})")
+        st.rerun()
+
+# Show today's logged meals
+if today_logs.get('meals'):
+    st.markdown("**Today's Meals:**")
+    for idx, meal in enumerate(today_logs['meals']):
+        st.markdown(f"- {meal['time']} | {meal['type']}: {meal['quantity']}g ({meal['composition']})")
+
+st.markdown("---")
 
 # Check and display alerts
 alerts = check_alerts()

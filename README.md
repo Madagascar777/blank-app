@@ -16,37 +16,52 @@ Most productivity advice relies on willpower and discipline. **This fails** beca
 
 ### Currently Implemented (MVP):
 
-1. **Sleep Quality & Consistency Tracking**
+1. **Daily Scoring System** ⭐ NEW
+   - Real-time score (0-100) based on biological adherence
+   - Grade system (A+ to D) with improvement suggestions
+   - Score breakdown by category (sleep, meals, movement)
+   - Tracks consistency with your biological schedule
+
+2. **Manual Time Logging (GMT+3 Timezone)** ⭐ NEW
+   - Log wake-up time with exact hour/minute
+   - Log sleep time (bedtime) manually
+   - Meal logging with quantity tracking (grams)
+   - All times based on your local GMT+3 timezone
+
+3. **Sleep Quality & Consistency Tracking**
    - Track sleep and wake times
    - Monitor consistency and circadian rhythm
    - Bedtime alerts to prevent irregular patterns
+   - Score points for staying consistent with target times
 
-2. **Blood Glucose Management (Meal Timing)**
+4. **Blood Glucose Management (Meal Timing)**
    - Real-time alerts when you haven't eaten in 3-4 hours
-   - Meal logging with composition tracking
+   - Meal logging with quantity and composition tracking
    - Preventive warnings BEFORE glucose crashes
+   - Score points for eating 3+ meals per day with proper quantities
 
-3. **Cognitive Load Management**
+5. **Cognitive Load Management**
    - 90-minute work cycle enforcement
    - Automatic break reminders
    - Prevents neurotransmitter depletion and decision fatigue
 
-4. **Movement & Adenosine Clearing**
+6. **Movement & Adenosine Clearing**
    - Movement tracking every 45-60 minutes
    - Alerts when sedentary too long
    - Helps clear adenosine and boost dopamine
+   - Score points for frequent movement
 
-5. **Light Exposure & Circadian Health**
+7. **Light Exposure & Circadian Health**
    - Sunlight exposure logging
    - Outdoor time tracking
    - Morning light reminders for cortisol optimization
 
 ### Coming Soon (Expansion):
 
-6. Difficulty Waking Up (morning cortisol optimization)
-7. Focus-Breakthrough Sleep Impulse (intense focus detection)
-8. Decision Fatigue Tracking (decision limit counter)
-9. Irregular Work Schedule (consistency monitoring)
+8. Difficulty Waking Up (morning cortisol optimization)
+9. Focus-Breakthrough Sleep Impulse (intense focus detection)
+10. Decision Fatigue Tracking (decision limit counter)
+11. Irregular Work Schedule (consistency monitoring)
 
 ## How to Run
 
@@ -71,14 +86,22 @@ Most productivity advice relies on willpower and discipline. **This fails** beca
    - Set your target wake and sleep times
    - Set your meal times (breakfast, lunch, dinner)
    - Set your work hours
+   - Times are in GMT+3 timezone
 
-2. **Start Tracking**:
-   - Click "Log Meal" after eating
-   - Click "Start Work Session" when beginning focused work
-   - Click "Log Movement" after walking/stretching
-   - Click "Log Sunlight" after going outdoors
+2. **Start Tracking - Manual Logging**:
+   - **Wake-Up Time**: Enter hour and minute when you woke up today
+   - **Sleep Time**: Enter hour and minute when you went to bed
+   - **Meals**: Log each meal with type, quantity (grams), and composition
+   - **Movement**: Click "Log Movement" after walking/stretching
+   - **Sunlight**: Click "Log Sunlight" after going outdoors
 
-3. **Follow the Alerts**:
+3. **Monitor Your Score**:
+   - Your daily score (0-100) updates automatically
+   - Get a grade from A+ to D based on adherence
+   - See improvement suggestions tailored to your data
+   - Track breakdown by category
+
+4. **Follow the Alerts**:
    - The dashboard shows real-time biological condition alerts
    - 🔴 Red alerts = critical (take action immediately)
    - 🟡 Yellow alerts = warning (plan to act soon)
@@ -86,12 +109,48 @@ Most productivity advice relies on willpower and discipline. **This fails** beca
 
 ### Daily Workflow:
 
-1. **Morning**: Log wake time, get sunlight exposure
+1. **Morning**: 
+   - Log your wake-up time (exact time you woke up)
+   - Get sunlight exposure within 1 hour
+
 2. **Throughout Day**: 
-   - Log meals every 3-4 hours
+   - Log meals with quantities (aim for 3 meals, 300-500g total)
+   - Track meal composition (protein-heavy during work hours)
    - Start/stop work sessions (90-min cycles)
    - Log movement every 45-60 minutes
-3. **Evening**: Follow bedtime alert to maintain consistency
+
+3. **Evening**: 
+   - Log your sleep time when going to bed
+   - Follow bedtime alert to maintain consistency
+   - Check your daily score and improvement tips
+
+### Scoring System:
+
+Your daily score is calculated from:
+- **Wake Time (25 points)**: Consistency with target wake time
+  - Within 15 min: 25 points
+  - Within 30 min: 20 points
+  - Within 60 min: 15 points
+  
+- **Sleep Time (25 points)**: Consistency with target bedtime
+  - Within 15 min: 25 points
+  - Within 30 min: 20 points
+  - Within 60 min: 15 points
+
+- **Meals (30 points)**: Number of meals logged
+  - 3+ meals: 30 points
+  - 2 meals: 20 points
+  - 1 meal: 10 points
+
+- **Meal Quantity (10 points)**: Total daily intake
+  - 300-500g: 10 points
+  - 200-600g: 7 points
+  - Other: 3 points
+
+- **Movement (10 points)**: Recent physical activity
+  - Last hour: 10 points
+  - Last 2 hours: 7 points
+  - Longer: 3 points
 
 ## The 9 Biological Root Causes
 
@@ -133,9 +192,12 @@ Most productivity advice relies on willpower and discipline. **This fails** beca
 
 ## Technical Details
 
-- **Framework**: Streamlit (Python)
+- **Framework**: Streamlit (Python 3)
+- **Dependencies**: streamlit, pandas, pytz
+- **Timezone**: GMT+3 (Europe/Moscow timezone)
 - **Data Storage**: JSON file (user_data.json)
 - **State Management**: Streamlit session state
+- **Scoring Algorithm**: Real-time calculation based on biological adherence
 - **Responsive**: Mobile-friendly UI with custom CSS
 
 ## Data Persistence
