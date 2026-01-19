@@ -16,42 +16,52 @@ Most productivity advice relies on willpower and discipline. **This fails** beca
 
 ### Currently Implemented (MVP):
 
-1. **Daily Scoring System** ⭐ NEW
+1. **Intelligent Meal Analysis** 🆕 LATEST
+   - **Enter ingredients, calories, and quantity for each meal**
+   - **Real-time biological analysis** with impact scoring (0-100)
+   - **Identifies problems**: Glucose spikes, afternoon slumps, brain fog
+   - **Explains biology**: Why certain foods cause sleepiness or energy crashes
+   - **Timing-based insights**: Different recommendations for breakfast/lunch/dinner
+   - **Personalized tips**: What to add/change for better biological support
+   - **Biology level grading**: OPTIMAL, GOOD, MODERATE, or POOR rating
+
+2. **Daily Scoring System** ⭐
    - Real-time score (0-100) based on biological adherence
    - Grade system (A+ to D) with improvement suggestions
    - Score breakdown by category (sleep, meals, movement)
    - Tracks consistency with your biological schedule
 
-2. **Manual Time Logging (GMT+3 Timezone)** ⭐ NEW
+3. **Manual Time Logging (GMT+3 Timezone)** ⭐
    - Log wake-up time with exact hour/minute
    - Log sleep time (bedtime) manually
-   - Meal logging with quantity tracking (grams)
+   - Meal logging with ingredients, calories, and quantity
    - All times based on your local GMT+3 timezone
 
-3. **Sleep Quality & Consistency Tracking**
+4. **Sleep Quality & Consistency Tracking**
    - Track sleep and wake times
    - Monitor consistency and circadian rhythm
    - Bedtime alerts to prevent irregular patterns
    - Score points for staying consistent with target times
 
-4. **Blood Glucose Management (Meal Timing)**
+5. **Blood Glucose Management (Meal Timing)**
    - Real-time alerts when you haven't eaten in 3-4 hours
-   - Meal logging with quantity and composition tracking
+   - Meal logging with full nutritional details
    - Preventive warnings BEFORE glucose crashes
+   - Biological analysis explains insulin responses
    - Score points for eating 3+ meals per day with proper quantities
 
-5. **Cognitive Load Management**
+6. **Cognitive Load Management**
    - 90-minute work cycle enforcement
    - Automatic break reminders
    - Prevents neurotransmitter depletion and decision fatigue
 
-6. **Movement & Adenosine Clearing**
+7. **Movement & Adenosine Clearing**
    - Movement tracking every 45-60 minutes
    - Alerts when sedentary too long
    - Helps clear adenosine and boost dopamine
    - Score points for frequent movement
 
-7. **Light Exposure & Circadian Health**
+8. **Light Exposure & Circadian Health**
    - Sunlight exposure logging
    - Outdoor time tracking
    - Morning light reminders for cortisol optimization
@@ -91,7 +101,7 @@ Most productivity advice relies on willpower and discipline. **This fails** beca
 2. **Start Tracking - Manual Logging**:
    - **Wake-Up Time**: Enter hour and minute when you woke up today
    - **Sleep Time**: Enter hour and minute when you went to bed
-   - **Meals**: Log each meal with type, quantity (grams), and composition
+   - **Meals**: Log each meal with ingredients, calories, quantity, and composition
    - **Movement**: Click "Log Movement" after walking/stretching
    - **Sunlight**: Click "Log Sunlight" after going outdoors
 
@@ -114,8 +124,13 @@ Most productivity advice relies on willpower and discipline. **This fails** beca
    - Get sunlight exposure within 1 hour
 
 2. **Throughout Day**: 
-   - Log meals with quantities (aim for 3 meals, 300-500g total)
-   - Track meal composition (protein-heavy during work hours)
+   - **Log meals with full details**:
+     - Enter ingredients (comma-separated)
+     - Input calories (kcal)
+     - Specify quantity (grams)
+     - Select composition (Protein-heavy/Balanced/Carb-heavy)
+     - Get instant biological analysis
+   - Review meal analysis for problems and recommendations
    - Start/stop work sessions (90-min cycles)
    - Log movement every 45-60 minutes
 
@@ -123,6 +138,47 @@ Most productivity advice relies on willpower and discipline. **This fails** beca
    - Log your sleep time when going to bed
    - Follow bedtime alert to maintain consistency
    - Check your daily score and improvement tips
+
+### Biological Meal Analysis:
+
+When you log a meal, the app provides intelligent analysis:
+
+**What Gets Analyzed:**
+- **Calories**: Optimal ranges differ for meals (400-600 kcal) vs snacks (<300 kcal)
+- **Ingredients**: Detects high-GI carbs, protein sources, healthy fats
+- **Timing**: Different recommendations for breakfast, lunch, dinner based on circadian rhythm
+- **Quantity**: Warns about portions that may cause digestion issues or insufficient energy
+- **Composition**: Analyzes protein/carb/fat balance
+
+**Biology Level Ratings:**
+- 🏆 **OPTIMAL (85-100)**: Excellent biological support
+- ✅ **GOOD (70-84)**: Positive biological impact
+- ⚠️ **MODERATE (50-69)**: Some biological concerns
+- 🔴 **POOR (0-49)**: Significant biological issues
+
+**Common Warnings:**
+- **Glucose Spike Risk**: Refined carbs without protein → Insulin surge → Sleepiness
+- **Afternoon Slump**: Carb-heavy lunch (12-2pm) → Post-lunch dip + circadian low = Severe drowsiness
+- **Brain Fog**: Large portions → Blood diverted to digestion → Reduced brain oxygen
+- **Low Protein**: Insufficient amino acids → Impaired neurotransmitter production
+
+**Example:**
+```
+Input:
+- Type: Lunch
+- Ingredients: white rice, chicken breast, broccoli
+- Calories: 500 kcal
+- Quantity: 300g
+- Time: 13:00
+
+Analysis:
+✅ Contains protein - Supports dopamine/norepinephrine production
+✅ Optimal calories - Sustained energy without crash
+⚠️ HIGH GLUCOSE SPIKE RISK - Refined carbs detected
+💡 Recommendation: Switch to brown rice or add more protein
+
+Biology Level: GOOD (75/100)
+```
 
 ### Scoring System:
 

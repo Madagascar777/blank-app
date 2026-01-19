@@ -1,5 +1,104 @@
 # Changelog - BioRoots Daily Life Optimizer
 
+## Version 2.1 - Biological Meal Analysis (2025-01-19)
+
+### ✨ Major New Features
+
+#### 1. Advanced Meal Logging with Biological Analysis
+- **Ingredient tracking** - Enter all ingredients for each meal
+- **Calorie input** - Track caloric intake per meal
+- **Quantity tracking** - Weight in grams
+- **Real-time biological analysis** - Instant feedback on every meal
+
+#### 2. Intelligent Biology Analysis Engine
+The app now analyzes each meal and provides:
+
+**🏆 Biology Level Rating**
+- OPTIMAL (85-100): Excellent biological support
+- GOOD (70-84): Positive biological impact  
+- MODERATE (50-69): Some concerns
+- POOR (0-49): Significant issues
+
+**Analysis Categories:**
+
+**Calorie Analysis**
+- Optimal ranges for meals (400-600 kcal) vs snacks (<300 kcal)
+- Warns about insufficient fuel or excessive portions
+- Predicts insulin response and energy crashes
+
+**Ingredient Intelligence**
+- Detects high-GI carbs (white bread, rice, sugar, etc.)
+- Identifies protein sources (chicken, fish, eggs, etc.)
+- Recognizes healthy fats (avocado, nuts, olive oil, etc.)
+- Warns about glucose spike risks
+
+**Biological Impact Warnings**
+- 🔴 **GLUCOSE SPIKE RISK**: Refined carbs without protein buffer
+  - Explains: Insulin surge → Tryptophan → Serotonin/Melatonin → SLEEPINESS
+- 🔴 **AFTERNOON SLUMP RISK**: Carb-heavy lunch during work hours
+  - Explains: Post-lunch insulin + circadian dip = SEVERE DROWSINESS
+- ⚠️ **BRAIN FOG**: Large portions diverting blood from brain
+  - Explains: Blood to digestion → Reduced prefrontal cortex oxygen
+
+**Timing-Based Analysis**
+- **Breakfast**: Protein breakfast sets dopamine tone for the day
+- **Lunch (12-2pm)**: Warns about carb-heavy meals during afternoon circadian dip
+- **Dinner (8pm+)**: Approves evening carbs for sleep preparation
+- **Snacks**: Different calorie thresholds and recommendations
+
+**Personalized Recommendations**
+- Suggests when to eat carbs vs protein
+- Recommends protein sources to add
+- Advises on meal timing optimization
+- Provides glucose control strategies
+
+#### 3. Enhanced Meal Display
+- Expandable meal cards showing full analysis
+- Progress bar for biological impact score (0-100)
+- Color-coded problems (🔴) and benefits (✅)
+- Actionable recommendations (💡)
+
+### 🎨 UI Improvements
+- Text area for ingredient input with helpful placeholder
+- Split columns for quantity and calorie input
+- Expandable meal history with detailed analysis
+- Visual progress indicators for meal impact scores
+
+### 🧬 Biological Science Integrated
+The analysis engine incorporates:
+- **Glycemic Index** principles
+- **Insulin response** timing
+- **Circadian rhythm** effects on digestion
+- **Neurotransmitter** production requirements
+- **Blood flow** distribution during digestion
+- **Amino acid** availability for brain function
+
+### Example Analysis Output
+
+```
+Lunch (13:00) - 500 kcal, 300g
+Ingredients: white rice, chicken breast, vegetables
+
+🏆 GOOD - Positive biological impact
+Biological Impact Score: 75/100
+
+✅ Biological Benefits:
+- Contains protein - Supports neurotransmitter production
+- Optimal calories (500 kcal) - Sustained energy without crash
+- Protein-rich lunch - Maintains alertness through afternoon circadian dip
+
+⚠️ Biological Problems:
+- HIGH GLUCOSE SPIKE RISK - Contains refined carbs without adequate protein buffer
+  → Biological effect: Rapid insulin surge → Tryptophan enters brain → 
+    Serotonin/Melatonin production → SLEEPINESS
+
+💡 Recommendations:
+- GLUCOSE CONTROL: Pair carbs with protein/fat to slow absorption
+- Consider brown rice or quinoa for lower glycemic response
+```
+
+---
+
 ## Version 2.0 - Enhanced Scoring & Manual Logging (2025-01-19)
 
 ### ✨ New Features

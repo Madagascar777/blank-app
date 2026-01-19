@@ -220,6 +220,134 @@ def get_score_grade(score, max_score):
     else:
         return "D", "💪"
 
+def analyze_meal_biology(meal_type, ingredients, calories, quantity, composition, meal_time):
+    """Analyze meal from biological perspective and provide insights"""
+    
+    analysis = {
+        'biology_level': '',
+        'problems': [],
+        'benefits': [],
+        'recommendations': [],
+        'impact_score': 0
+    }
+    
+    impact_score = 100
+    
+    # Calorie analysis
+    if meal_type == "Snack":
+        if calories > 300:
+            analysis['problems'].append(f"⚠️ High calories for snack ({calories} kcal) - May cause insulin spike and energy crash")
+            impact_score -= 15
+        elif calories < 100:
+            analysis['benefits'].append(f"✅ Light snack ({calories} kcal) - Won't disrupt glucose balance")
+            impact_score += 5
+    else:  # Main meal
+        if calories < 300:
+            analysis['problems'].append(f"⚠️ Low calories ({calories} kcal) - Insufficient fuel, may cause hunger in 2-3 hours")
+            impact_score -= 10
+        elif calories > 800:
+            analysis['problems'].append(f"⚠️ High calories ({calories} kcal) - Large insulin response, may cause drowsiness")
+            impact_score -= 15
+        elif 400 <= calories <= 600:
+            analysis['benefits'].append(f"✅ Optimal calories ({calories} kcal) - Sustained energy without crash")
+            impact_score += 10
+    
+    # Composition analysis
+    ingredients_lower = ingredients.lower()
+    
+    # Check for problematic ingredients
+    high_gi_carbs = ['white bread', 'rice', 'pasta', 'sugar', 'candy', 'soda', 'juice', 'pastry', 'cake', 'cookie']
+    has_high_gi = any(carb in ingredients_lower for carb in high_gi_carbs)
+    
+    protein_sources = ['chicken', 'beef', 'fish', 'egg', 'protein', 'tofu', 'lentil', 'bean', 'meat', 'salmon', 'tuna']
+    has_protein = any(protein in ingredients_lower for protein in protein_sources)
+    
+    healthy_fats = ['avocado', 'nuts', 'olive oil', 'salmon', 'seeds', 'almond']
+    has_healthy_fats = any(fat in ingredients_lower for fat in healthy_fats)
+    
+    if has_high_gi and composition != "Protein-heavy":
+        analysis['problems'].append("🔴 HIGH GLUCOSE SPIKE RISK - Contains refined carbs without adequate protein buffer")
+        analysis['problems'].append("   → Biological effect: Rapid insulin surge → Tryptophan enters brain → Serotonin/Melatonin production → SLEEPINESS")
+        impact_score -= 20
+    
+    if not has_protein:
+        analysis['problems'].append("⚠️ Low protein content - May not sustain cognitive function")
+        analysis['problems'].append("   → Biological effect: Insufficient amino acids → Neurotransmitter production impaired")
+        impact_score -= 15
+    else:
+        analysis['benefits'].append("✅ Contains protein - Supports neurotransmitter production (dopamine, norepinephrine)")
+        impact_score += 10
+    
+    if has_healthy_fats:
+        analysis['benefits'].append("✅ Contains healthy fats - Slows glucose absorption, supports brain function")
+        impact_score += 10
+    
+    # Timing analysis
+    try:
+        meal_hour = int(meal_time.split(':')[0])
+        
+        if meal_type == "Breakfast":
+            if has_protein:
+                analysis['benefits'].append("✅ Protein breakfast - Sets dopamine tone for the day, improves focus")
+                impact_score += 15
+            if has_high_gi:
+                analysis['problems'].append("⚠️ Carb-heavy breakfast - May cause mid-morning energy crash")
+                impact_score -= 10
+        
+        elif meal_type == "Lunch":
+            if 12 <= meal_hour <= 14:
+                if composition == "Carb-heavy":
+                    analysis['problems'].append("🔴 AFTERNOON SLUMP RISK - Carb-heavy lunch during work hours")
+                    analysis['problems'].append("   → Biological effect: Post-lunch insulin spike + circadian dip = SEVERE DROWSINESS")
+                    impact_score -= 25
+                elif composition == "Protein-heavy":
+                    analysis['benefits'].append("✅ Protein-rich lunch - Maintains alertness through afternoon circadian dip")
+                    impact_score += 15
+        
+        elif meal_type == "Dinner":
+            if meal_hour >= 20:
+                if composition == "Carb-heavy":
+                    analysis['benefits'].append("✅ Evening carbs OK - Serotonin/melatonin production helps sleep preparation")
+                    impact_score += 10
+                analysis['recommendations'].append("💡 Eat 2-3 hours before bedtime for optimal digestion")
+    except:
+        pass
+    
+    # Quantity analysis
+    if quantity > 500:
+        analysis['problems'].append(f"⚠️ Large portion ({quantity}g) - Extended digestion may divert blood from brain")
+        analysis['problems'].append("   → Biological effect: Blood redirected to digestive system → Reduced prefrontal cortex oxygen → BRAIN FOG")
+        impact_score -= 10
+    elif quantity < 200 and meal_type != "Snack":
+        analysis['problems'].append(f"⚠️ Small portion ({quantity}g) - May not provide sustained energy")
+        impact_score -= 5
+    
+    # Overall recommendations
+    if composition == "Carb-heavy" and (9 <= meal_hour <= 17):
+        analysis['recommendations'].append("💡 TIMING TIP: Save carb-heavy meals for evening to avoid daytime drowsiness")
+    
+    if not has_protein and meal_type in ["Breakfast", "Lunch"]:
+        analysis['recommendations'].append("💡 UPGRADE: Add protein source (eggs, chicken, fish, Greek yogurt) to sustain energy")
+    
+    if has_high_gi:
+        analysis['recommendations'].append("💡 GLUCOSE CONTROL: Pair carbs with protein/fat to slow absorption")
+    
+    # Determine biology level
+    impact_score = max(0, min(100, impact_score))
+    
+    if impact_score >= 85:
+        analysis['biology_level'] = "🏆 OPTIMAL - Excellent biological support"
+    elif impact_score >= 70:
+        analysis['biology_level'] = "✅ GOOD - Positive biological impact"
+    elif impact_score >= 50:
+        analysis['biology_level'] = "⚠️ MODERATE - Some biological concerns"
+    else:
+        analysis['biology_level'] = "🔴 POOR - Significant biological issues"
+    
+    analysis['impact_score'] = impact_score
+    
+    return analysis
+
 # Initialize session state
 if 'data' not in st.session_state:
     st.session_state.data = load_data()
@@ -475,37 +603,105 @@ with col_log2:
         st.rerun()
 
 with col_log3:
-    st.markdown("#### 🍽️ Log Meal with Quantity")
+    st.markdown("#### 🍽️ Log Meal with Details")
     
     meal_name = st.selectbox("Meal Type", ["Breakfast", "Lunch", "Dinner", "Snack"], key="meal_type")
-    meal_quantity = st.number_input("Quantity (grams)", min_value=10, max_value=1000, value=150, step=10, key="meal_qty")
+    meal_ingredients = st.text_area(
+        "Ingredients (comma-separated)",
+        placeholder="e.g., chicken breast, brown rice, broccoli, olive oil",
+        key="meal_ingredients",
+        height=60
+    )
+    
+    col_meal1, col_meal2 = st.columns(2)
+    with col_meal1:
+        meal_quantity = st.number_input("Quantity (grams)", min_value=10, max_value=1000, value=200, step=10, key="meal_qty")
+    with col_meal2:
+        meal_calories = st.number_input("Calories (kcal)", min_value=10, max_value=2000, value=400, step=10, key="meal_cal")
+    
     meal_composition = st.selectbox(
         "Composition",
         ["Protein-heavy", "Balanced", "Carb-heavy"],
-        key="meal_comp"
+        key="meal_comp",
+        help="Protein-heavy: Best for work hours. Carb-heavy: Better for evening."
     )
     
-    if st.button("💾 Log Meal", key="btn_meal"):
-        if 'meals' not in st.session_state.data['today_logs']:
-            st.session_state.data['today_logs']['meals'] = []
-        
-        meal_entry = {
-            'type': meal_name,
-            'quantity': meal_quantity,
-            'composition': meal_composition,
-            'time': current_time_gmt3.strftime('%H:%M')
-        }
-        st.session_state.data['today_logs']['meals'].append(meal_entry)
-        st.session_state.last_meal_time = current_time_gmt3
-        save_data(st.session_state.data)
-        st.success(f"✅ {meal_name} logged: {meal_quantity}g ({meal_composition})")
-        st.rerun()
+    if st.button("💾 Log & Analyze Meal", key="btn_meal"):
+        if not meal_ingredients.strip():
+            st.error("⚠️ Please enter ingredients")
+        else:
+            if 'meals' not in st.session_state.data['today_logs']:
+                st.session_state.data['today_logs']['meals'] = []
+            
+            meal_time = current_time_gmt3.strftime('%H:%M')
+            
+            # Analyze meal biology
+            analysis = analyze_meal_biology(
+                meal_name, 
+                meal_ingredients, 
+                meal_calories, 
+                meal_quantity, 
+                meal_composition, 
+                meal_time
+            )
+            
+            meal_entry = {
+                'type': meal_name,
+                'ingredients': meal_ingredients,
+                'quantity': meal_quantity,
+                'calories': meal_calories,
+                'composition': meal_composition,
+                'time': meal_time,
+                'analysis': analysis
+            }
+            st.session_state.data['today_logs']['meals'].append(meal_entry)
+            st.session_state.last_meal_time = current_time_gmt3
+            save_data(st.session_state.data)
+            st.success(f"✅ {meal_name} logged and analyzed!")
+            st.rerun()
 
-# Show today's logged meals
+st.markdown("---")
+
+# Show today's logged meals with biological analysis
 if today_logs.get('meals'):
-    st.markdown("**Today's Meals:**")
-    for idx, meal in enumerate(today_logs['meals']):
-        st.markdown(f"- {meal['time']} | {meal['type']}: {meal['quantity']}g ({meal['composition']})")
+    st.markdown("### 🍽️ Today's Meals & Biological Analysis")
+    
+    for idx, meal in enumerate(today_logs['meals'], 1):
+        with st.expander(f"**{meal['time']} - {meal['type']}** | {meal.get('calories', 0)} kcal | {meal['quantity']}g", expanded=False):
+            
+            # Display meal details
+            st.markdown(f"**Ingredients:** {meal.get('ingredients', 'N/A')}")
+            st.markdown(f"**Composition:** {meal['composition']}")
+            
+            # Display biological analysis if available
+            if 'analysis' in meal:
+                analysis = meal['analysis']
+                
+                # Biology Level
+                st.markdown(f"### {analysis['biology_level']}")
+                st.progress(analysis['impact_score'] / 100)
+                st.markdown(f"**Biological Impact Score: {analysis['impact_score']}/100**")
+                
+                # Problems
+                if analysis['problems']:
+                    st.markdown("#### 🔴 Biological Problems:")
+                    for problem in analysis['problems']:
+                        st.markdown(f"- {problem}")
+                
+                # Benefits
+                if analysis['benefits']:
+                    st.markdown("#### ✅ Biological Benefits:")
+                    for benefit in analysis['benefits']:
+                        st.markdown(f"- {benefit}")
+                
+                # Recommendations
+                if analysis['recommendations']:
+                    st.markdown("#### 💡 Recommendations:")
+                    for rec in analysis['recommendations']:
+                        st.markdown(f"- {rec}")
+            else:
+                # Legacy meal without analysis
+                st.markdown("*No biological analysis available for this meal*")
 
 st.markdown("---")
 
